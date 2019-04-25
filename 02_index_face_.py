@@ -11,7 +11,7 @@ target_ext = '.png'  # 対象画像の拡張子
 collection_id = '5hn' # 顔コレクションのID
 target_bucket = '5hn' # 画像ファイルをアップロードしたバケット
 
-client = boto3.client('rekognition')
+client = boto3.client('rekognition','us-west-2')
 
 
 def index(label, file):

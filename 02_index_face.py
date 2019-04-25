@@ -7,16 +7,19 @@ import json
 
 target_ext = '.png'  # 対象画像の拡張子
 collection_id = '5hn'  # 顔コレクションのID
-target_bucket = '5hn'  # 画像ファイルをアップロードしたバケット
+target_bucket = '5hn2'  # 画像ファイルをアップロードしたバケット
 
 labels = [1, 2, 3, 4, 5, 9]
 file_num = [462, 433, 502, 385, 496, 131]
 
-client = boto3.client('rekognition')
+labels = [2, 3, 4, 5, 9]
+file_num = [433, 502, 385, 496, 131]
+
+client = boto3.client('rekognition','us-west-2')
 
 
 def index(label, filename):
-    print(filename)
+    print(target_bucket + '\t' + filename)
     response = client.index_faces(
         CollectionId=collection_id,
         Image={
@@ -36,7 +39,9 @@ def index(label, filename):
 
 
 if __name__ == '__main__':
+    i = 0
     for label in labels:
-        for max_file_num in file_num:
-            for f in range(max_file_num):
-                index(str(label), str(label) + '_' + str(f+1) + target_ext)
+        max_file_num = file_num[i]
+        for f in range(max_file_num - 1):
+            index(str(label), str(label) + '_' + str(f+1) + target_ext)
+        i = i + 1
