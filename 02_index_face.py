@@ -12,9 +12,6 @@ target_bucket = '5hn2'  # 画像ファイルをアップロードしたバケッ
 labels = [1, 2, 3, 4, 5, 9]
 file_num = [462, 433, 502, 385, 496, 131]
 
-labels = [2, 3, 4, 5, 9]
-file_num = [433, 502, 385, 496, 131]
-
 client = boto3.client('rekognition','us-west-2')
 
 
