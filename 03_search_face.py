@@ -1,39 +1,56 @@
 ﻿import boto3
+import datetime
 import glob
 import json
 import os
 import pathlib
 import random
 
+
+# $ aws s3 mb s3://5hntest
+# $ aws s3 sync test s3://5hntest --acl public-read
+
+
+scrpath = os.path.abspath(os.path.dirname(__file__))
+os.chdir(scrpath)
+
 # 対象ディレクトリ(このディレクトリのサブディレクトリ名がラベルを表し、それらの中に画像ファイルが格納されている)
-target_dir = 'answer'
+target_dir = 'test'
 target_ext = '.png'  # 対象画像の拡張子
 collection_id = '5hn'  # 顔コレクションのID
-target_bucket = '5hn'  # 画像ファイルをアップロードしたバケット
+target_bucket = '5hntest'  # 画像ファイルをアップロードしたバケット
+
+# テスト結果を出力するテキストファイル名
+nowstr = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+result_filename = 'result-test-'+nowstr+'.txt'
 
 client = boto3.client('rekognition', 'us-west-2')
 
 
 def search(label, filename):
-    print(target_bucket + '\t' + filename)
+    print('search: ' + target_bucket + '\t' + label + '/' + filename)
     try:
         response = client.search_faces_by_image(
             CollectionId=collection_id,
             Image={
                 'S3Object': {
                     'Bucket': target_bucket,
-                    'Name': filename,
+                    'Name': label + '/' + filename,
                 }
             },
-            MaxFaces=100,
+            MaxFaces=1,
             FaceMatchThreshold=80
         )
 
         response = json.loads(json.dumps(response))
-        print(response)
+        # print(response)
+        name = str(response['FaceMatches'][0]['Face']['ExternalImageId'])
+        pred = str(response['FaceMatches'][0]['Face']['Confidence'])
+        print(name, pred)
 
         return (str(label) == str(response['FaceMatches'][0]['Face']['ExternalImageId'])) if 1 else 0
-    except:
+    except Exception as e:
+        print(e)
         return 0
 
 
@@ -63,12 +80,19 @@ def main(base_dir):
 
             for i, f in enumerate(files, 1):
                 # print('f: ' + f)
-                # count_items_correct += search(label, f)
                 f = os.path.basename(f)
-                print('f: ' + f)
                 count_items_correct += search(label, f)
                 count_items_all += 1
-    print('Complete. {:.2%}'.format(count_items_correct / count_items_all))
+
+    if count_items_all > 0:
+        mes = 'Complete. accuracy:{} / {} = {:.2%}'.format(
+            count_items_correct, count_items_all, count_items_correct / count_items_all)
+    else:
+        mes = 'Complete.'
+    mes += ' ' + datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+    print(mes)
+    with open(os.path.join(scrpath, result_filename), mode='a') as f:
+        f.write(mes + '\n')
 
 
 if __name__ == '__main__':

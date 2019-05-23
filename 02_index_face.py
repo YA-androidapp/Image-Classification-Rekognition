@@ -5,11 +5,14 @@ import os
 import pathlib
 import random
 
+# $ aws s3 mb s3://5hntrain
+# $ aws s3 sync train s3://5hntrain --acl public-read
+
 # 対象ディレクトリ(このディレクトリのサブディレクトリ名がラベルを表し、それらの中に画像ファイルが格納されている)
-target_dir = 'class'
+target_dir = 'train'
 target_ext = '.png'  # 対象画像の拡張子
 collection_id = '5hn'  # 顔コレクションのID
-target_bucket = '5hn'  # 画像ファイルをアップロードしたバケット
+target_bucket = '5hntrain'  # 画像ファイルをアップロードしたバケット
 
 client = boto3.client('rekognition', 'us-west-2')
 
