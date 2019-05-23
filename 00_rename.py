@@ -1,11 +1,11 @@
-import os
 import glob
+import os
 import pathlib
 import random
 
 
 # 対象ディレクトリ(このディレクトリのサブディレクトリ名がラベルを表し、それらの中に画像ファイルが格納されている)
-target_dir = 'class'
+target_dir = 'train'
 target_ext = '.png'  # 対象画像の拡張子
 enable_random = True  # 連番をランダムに付与するか
 
@@ -39,7 +39,7 @@ def main(base_dir, target_ext, enable_random):
             for i, f in enumerate(files, 1):
                 ftitle, fext = os.path.splitext(f)  # fextの先頭はピリオド
                 new_name = label + '_{0:d}'.format(i) + fext
-                os.rename(f, os.path.join(d, new_name))
+                os.rename(f, os.path.join(os.path.dirname(d), new_name))
                 print('\t' + f + ' => ' + new_name)
     print('done')
 

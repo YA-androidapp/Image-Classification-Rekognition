@@ -1,20 +1,17 @@
-﻿import os
-import random
-import pathlib
+﻿import boto3
 import glob
-import boto3
 import json
+import os
+import pathlib
+import random
 
 # 対象ディレクトリ(このディレクトリのサブディレクトリ名がラベルを表し、それらの中に画像ファイルが格納されている)
 target_dir = 'answer'
 target_ext = '.png'  # 対象画像の拡張子
 collection_id = '5hn'  # 顔コレクションのID
-target_bucket = '5hn2'  # 画像ファイルをアップロードしたバケット
+target_bucket = '5hn'  # 画像ファイルをアップロードしたバケット
 
-labels = [1, 2, 3, 4, 5, 9]
-file_num = [462, 433, 502, 385, 496, 131]
-
-client = boto3.client('rekognition','us-west-2')
+client = boto3.client('rekognition', 'us-west-2')
 
 
 def search(label, filename):
@@ -28,8 +25,8 @@ def search(label, filename):
                     'Name': filename,
                 }
             },
-            MaxFaces = 100,
-            FaceMatchThreshold = 80
+            MaxFaces=100,
+            FaceMatchThreshold=80
         )
 
         response = json.loads(json.dumps(response))
